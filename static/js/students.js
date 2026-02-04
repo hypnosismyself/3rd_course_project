@@ -124,6 +124,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  document.getElementById("printReportBtn")?.addEventListener("click", printStudentsReport);
+
+  async function printStudentsReport() {
+    try {
+      const students = await api.get("/students/");
+
+      const tbody = document.getElementById("printStudentsBody");
+      tbody.innerHTML = "";
+
+      students.forEach((s, index) => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${s.last_name ?? ""} ${s.first_name ?? ""}</td>
+        <td>${s.group_number ?? "-"}</td>
+        <td>${s.user?.username ?? "-"}</td>
+        <td>${s.user?.email ?? "-"}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("reportDate").textContent =
+      "Дата формирования: " + new Date().toLocaleDateString();
+
+    console.log("Students for print:", students);
+    console.log("Rows:", tbody.children.length);
+    window.print();
+
+  } catch (err) {
+    console.error(err);
+    alert("Не удалось сформировать отчёт");
+  }
+}
+
   refreshBtn?.addEventListener('click', loadStudents);
   loadStudents();
 });

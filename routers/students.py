@@ -298,3 +298,46 @@ async def update_student(
 
     # ⬇ используем существующий GET
     return await get_student(student_id, conn)
+
+
+@router.delete("/{student_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_student(student_id: int, conn: asyncpg.Connection = Depends(get_connection)):
+    """Удалить студента и связанного пользователя"""
+
+    # Проверяем, есть ли user_id в таблице students
+    try:
+        has_user_id = await table_has_column(conn, "courses", "students", "user_id")
+    except Exception:
+        has_user_id = False
+
+    async with conn.transaction():
+        if has_user_id:
+            row = await conn.fetchrow(
+                "SELECT user_id FROM courses.students WHERE id = $1",
+                student_id
+            )
+            if not row:
+                raise HTTPException(status_code=404, detail="Студент не найден")
+
+            user_id = row["user_id"]
+        else:
+            row = await conn.fetchrow(
+                "SELECT id FROM courses.students WHERE id = $1",
+                student_id
+            )
+            if not row:
+                raise HTTPException(status_code=404, detail="Студент не найден")
+
+            user_id = student_id
+
+        await conn.execute(
+            "DELETE FROM courses.students WHERE id = $1",
+            student_id
+        )
+
+        await conn.execute(
+            "DELETE FROM courses.users WHERE id = $1",
+            user_id
+        )
+
+    return

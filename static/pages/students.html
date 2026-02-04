@@ -21,9 +21,27 @@
     <div>
       <button id="refresh-students" class="btn btn-outline-secondary me-2" data-auth-only>Обновить</button>
       <button id="create-student-btn" class="btn btn-primary" data-auth-only data-roles="admin,teacher">Добавить студента</button>
-      <button id="print-students" class="btn btn-outline-secondary" data-auth-only data-roles="admin,teacher">Печать</button>
+      <button id="printReportBtn" class="btn btn-outline-secondary" data-auth-only data-roles="admin,teacher">Печать</button>
     </div>
   </div>
+
+  <div id="printReport" class="print-only">
+  <h1>Отчёт по студентам</h1>
+  <p id="reportDate"></p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>ФИО</th>
+        <th>Группа</th>
+        <th>Логин</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody id="printStudentsBody"></tbody>
+  </table>
+</div>
 
   <div class="card">
     <div class="card-body p-0">
