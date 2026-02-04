@@ -78,25 +78,57 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (courseForm) {
-    courseForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const payload = Object.fromEntries(new FormData(courseForm).entries());
-      payload.duration = Number(payload.duration);
-      try {
-        if (courseForm.dataset.courseId) {
-          await api.patch(`/courses/${courseForm.dataset.courseId}`, payload);
-        } else {
-          await api.post('/courses/', payload);
-        }
-        bsCourseModal?.hide();
-        loadCourses();
-      } catch (err) {
-        alert('Ошибка сохранения: ' + (err.body?.detail || err.message || JSON.stringify(err)));
-      }
-    });
-  }
+  courseForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const teacherSelect = document.getElementById("teacherSelect");
+    if (!teacherSelect.value) {
+      alert("Выберите преподавателя");
+      return;
+    }
+
+    const payload = Object.fromEntries(new FormData(courseForm).entries());
+
+    payload.teacher_id = Number(payload.teacher_id);
+    payload.duration = Number(payload.duration);
+
+    try {
+      await api.post("/courses/", payload);
+      bsCourseModal?.hide();
+      courseForm.reset();
+      loadCourses();
+    } catch (err) {
+      console.error(err);
+      alert(err.body?.detail?.[0]?.msg || "Ошибка сохранения курса");
+    }
+  });
+
+  async function loadTeachers() {
+    const select = document.getElementById("teacherSelect");
+
+    try {
+        const teachers = await api.get("/teachers/");
+
+        teachers.forEach(t => {
+            const option = document.createElement("option");
+            option.value = t.id;
+
+            if (t.user) {
+                option.textContent = `${t.user.username} (${t.position || "преподаватель"})`;
+            } else {
+                option.textContent = `Преподаватель #${t.id}`;
+            }
+
+            select.appendChild(option);
+        });
+
+    } catch (err) {
+        console.error("Ошибка загрузки преподавателей", err);
+        alert("Не удалось загрузить список преподавателей");
+    }
+}
 
   refreshBtn?.addEventListener('click', loadCourses);
   loadCourses();
+  loadTeachers();
 });

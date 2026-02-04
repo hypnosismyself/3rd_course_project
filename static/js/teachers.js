@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const payload = Object.fromEntries(new FormData(form).entries());
-      payload.role_id = Number(payload.role_id);
+      payload.role_id = 2;
       try {
         await api.post('/teachers/', payload);
         bsModal?.hide();

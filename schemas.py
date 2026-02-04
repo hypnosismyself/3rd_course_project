@@ -129,7 +129,7 @@ class StudentWithUser(Student):
 
 class CourseBase(BaseModel):
     title: str
-    description: str
+    description: Optional[str] = None
     duration: int
     teacher_id: int
 

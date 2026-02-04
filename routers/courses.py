@@ -13,24 +13,30 @@ router = APIRouter(
 
 
 @router.post("/", response_model=schemas.Course)
-async def create_course(data: schemas.CourseCreate, conn: asyncpg.Connection = Depends(get_connection)
+async def create_course(
+    data: schemas.CourseCreate,
+    conn: asyncpg.Connection = Depends(get_connection)
 ):
-    """Создать курс"""
-
     duration = timedelta(days=data.duration)
 
     row = await conn.fetchrow(
         """
-        INSERT INTO courses.courses (title, teacher_id, duration)
-        VALUES ($1, $2, $3)
+        INSERT INTO courses.courses (title, description, teacher_id, duration)
+        VALUES ($1, $2, $3, $4)
         RETURNING *
         """,
         data.title,
+        data.description,
         data.teacher_id,
         duration
     )
 
-    return dict(row)
+    course = dict(row)
+
+    if isinstance(course["duration"], timedelta):
+        course["duration"] = course["duration"].days
+
+    return course
 
 
 @router.get("/", response_model=List[schemas.CourseWithTeacher])
@@ -69,6 +75,9 @@ async def get_courses(
     courses = []
     for row in rows:
         course_dict = dict(row)
+        if isinstance(course_dict.get("duration"), timedelta):
+            course_dict["duration"] = course_dict["duration"].days
+
         course_dict['teacher'] = {
             'id': row['teacher_id'],
             'first_name': row['first_name'],
