@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const payload = Object.fromEntries(new FormData(form).entries());
-    // ensure role_id numeric
     payload.role_id = Number(payload.role_id);
     try {
       const res = await api.post('/students/', payload);

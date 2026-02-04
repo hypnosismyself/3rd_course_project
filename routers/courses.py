@@ -14,7 +14,7 @@ router = APIRouter(
 @router.post("/", response_model=schemas.Course, status_code=status.HTTP_201_CREATED)
 async def create_course(course: schemas.CourseCreate, conn: asyncpg.Connection = Depends(get_connection)):
     """Создать новый курс"""
-    # используем транзакцию для атомарности
+
     async with conn.transaction():
         teacher_exists = await conn.fetchval(
             "SELECT EXISTS(SELECT 1 FROM courses.teachers WHERE id = $1)",
@@ -87,6 +87,7 @@ async def get_courses(
 @router.get("/{course_id}", response_model=schemas.CourseWithTeacher)
 async def get_course(course_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Получить курс по ID"""
+
     row = await conn.fetchrow(
         """
         SELECT c.*, t.first_name, t.last_name, t.qualification, t.bio
@@ -118,6 +119,7 @@ async def get_course(course_id: int, conn: asyncpg.Connection = Depends(get_conn
 @router.put("/{course_id}", response_model=schemas.Course)
 async def update_course(course_id: int, course_update: schemas.CourseUpdate, conn: asyncpg.Connection = Depends(get_connection)):
     """Обновить данные курса"""
+
     existing = await conn.fetchrow(
         "SELECT id FROM courses.courses WHERE id = $1",
         course_id
@@ -185,6 +187,7 @@ async def update_course(course_id: int, course_update: schemas.CourseUpdate, con
 @router.get("/{course_id}/students", response_model=List[schemas.EnrollmentWithDetails])
 async def get_course_students(course_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Получить студентов курса"""
+
     rows = await conn.fetch(
         """
         SELECT sce.*, s.first_name, s.last_name, s.group_number, c.title, c.description
@@ -219,6 +222,7 @@ async def get_course_students(course_id: int, conn: asyncpg.Connection = Depends
 @router.get("/{course_id}/grades")
 async def get_course_grades(course_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Получить оценки по курсу"""
+
     rows = await conn.fetch(
         """
         SELECT g.*, s.first_name, s.last_name, s.group_number
@@ -236,6 +240,7 @@ async def get_course_grades(course_id: int, conn: asyncpg.Connection = Depends(g
 @router.get("/{course_id}/statistics")
 async def get_course_statistics(course_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Получить статистику курса"""
+
     course_exists = await conn.fetchval(
         "SELECT EXISTS(SELECT 1 FROM courses.courses WHERE id = $1)",
         course_id
@@ -273,6 +278,7 @@ async def get_course_statistics(course_id: int, conn: asyncpg.Connection = Depen
 @router.get("/{course_id}/students", response_model=List[schemas.EnrollmentWithDetails])
 async def get_course_students(course_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Получить студентов курса"""
+
     try:
         rows = await conn.fetch(
             """
@@ -286,7 +292,6 @@ async def get_course_students(course_id: int, conn: asyncpg.Connection = Depends
             course_id
         )
     except asyncpg.exceptions.UndefinedTableError:
-        # Если таблица enrollment отсутствует — возвращаем пустой список
         return []
 
     enrollments = []
@@ -310,8 +315,8 @@ async def get_course_students(course_id: int, conn: asyncpg.Connection = Depends
 @router.post("/", response_model=schemas.Course, status_code=status.HTTP_201_CREATED)
 async def create_course(course: schemas.CourseCreate, conn: asyncpg.Connection = Depends(get_connection)):
     """Создать новый курс"""
+
     async with conn.transaction():
-        # проверка teacher exists...
         row = await conn.fetchrow(
             """
             INSERT INTO courses.courses (title, description, duration, teacher_id)

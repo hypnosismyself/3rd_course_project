@@ -1,4 +1,3 @@
-// static/js/students.js — list + create + edit/delete handlers (role-aware)
 document.addEventListener('DOMContentLoaded', () => {
   const list = document.getElementById('students-list');
   const refreshBtn = document.getElementById('refresh-students');

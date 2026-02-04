@@ -1,9 +1,4 @@
-// static/js/ui-auth.js
-// UI helper: role-aware nav control without diagnostic banner.
-// Подключать ПОСЛЕ api.js и auth.js
-
 (function () {
-  // сразу скрываем элементы с data-auth-only по умолчанию, чтобы не мигали видимыми
   try {
     document.querySelectorAll('[data-auth-only]').forEach(el => {
       el.style.display = 'none';
@@ -126,7 +121,7 @@
     const toggle = document.createElement('a');
     toggle.className='d-flex align-items-center text-decoration-none dropdown-toggle';
     toggle.href='#'; toggle.id='navAuthToggle'; toggle.setAttribute('data-bs-toggle','dropdown'); toggle.setAttribute('aria-expanded','false');
-    // Prevent navigation on avatar click
+
     toggle.addEventListener('click', function(e){ e.preventDefault(); });
 
     const img = document.createElement('img'); img.id='nav-auth-avatar';
@@ -209,11 +204,9 @@
     document.querySelectorAll('[data-logout]').forEach(el=> el.addEventListener('click', ()=>{ window.auth.logout(); location.reload(); }));
   }
 
-  // Expose helpers
   window.uiAuth = { updateAll, getUserInfo, loadRolesOnce, computeUserRoleSet };
 
   document.addEventListener('DOMContentLoaded', () => {
-    // ensure auth-only hidden until updateAll runs
     document.querySelectorAll('[data-auth-only]').forEach(el => el.style.display = 'none');
     updateAll();
     attachLoginHandler();

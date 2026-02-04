@@ -1,4 +1,3 @@
-// reports.js — запрашиваем отчёт и рисуем график Chart.js
 document.addEventListener('DOMContentLoaded', () => {
   const out = document.getElementById('report-json');
   const chartEl = document.getElementById('performance-chart');
@@ -10,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await api.get(`/reports/performance-report/${courseId}`);
       out.textContent = JSON.stringify(data, null, 2);
 
-      // Строим простой барчарт по студентам и их average_grade
       const labels = data.students.map(s => s.student_name || (`${s.first_name} ${s.last_name}`));
       const values = data.students.map(s => Number(s.average_grade || 0));
 

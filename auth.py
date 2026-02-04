@@ -9,10 +9,9 @@ from schemas import TokenData
 
 load_dotenv()
 
-# Конфигурация JWT
-SECRET_KEY = os.getenv("SECRET_KEY", "CMCkrS3wlah6kksIB3U7GCGirlWsjczHfduYSHvY45t")
-ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ALGORITHM = os.environ.get("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 security = HTTPBearer()
 
@@ -26,7 +25,7 @@ def _normalize_role(role: Optional[str]) -> Optional[str]:
         return "teacher"
     if "студ" in r or "student" in r:
         return "student"
-    return r  # возвращаем как есть, на случай кастомных ролей
+    return r
 
 class AuthHandler:
     @staticmethod
@@ -79,5 +78,4 @@ class AuthHandler:
 
     @staticmethod
     async def verify_student(token_data: TokenData = Depends(verify_token)):
-        # Все аутентифицированные пользователи могут выполнять действия студента
         return token_data

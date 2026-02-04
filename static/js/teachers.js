@@ -1,4 +1,3 @@
-// static/js/teachers.js — list + create + edit/delete handlers
 document.addEventListener('DOMContentLoaded', () => {
   const list = document.getElementById('teachers-list');
   const refreshBtn = document.getElementById('refresh-teachers');
@@ -35,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </tr>`;
       }).join('');
 
-      // attach handlers for edit/delete after rendering
       document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', async (e) => {
           const id = btn.getAttribute('data-id');
@@ -68,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
-      // IMPORTANT: re-run ui-auth visibility after dynamic elements inserted
       window.uiAuth && window.uiAuth.updateAll && window.uiAuth.updateAll();
 
     } catch (err) {
@@ -77,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // create handler
   if (createBtn && form) {
     createBtn.addEventListener('click', () => {
       form.reset();

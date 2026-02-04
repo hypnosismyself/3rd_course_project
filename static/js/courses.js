@@ -1,4 +1,3 @@
-// static/js/courses.js — list + create + edit/delete handlers
 document.addEventListener('DOMContentLoaded', () => {
   const list = document.getElementById('courses-list');
   const refreshBtn = document.getElementById('refresh-courses');
@@ -64,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
-      // ensure visibility rules applied to newly added controls
       window.uiAuth && window.uiAuth.updateAll && window.uiAuth.updateAll();
 
     } catch (err) {

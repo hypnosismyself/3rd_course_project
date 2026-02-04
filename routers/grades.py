@@ -15,6 +15,7 @@ router = APIRouter(
 @router.post("/", response_model=schemas.Grade, status_code=status.HTTP_201_CREATED)
 async def create_grade(grade: schemas.GradeCreate, conn: asyncpg.Connection = Depends(get_connection)):
     """Создать оценку"""
+
     async with conn.transaction():
         student_exists = await conn.fetchval(
             "SELECT EXISTS(SELECT 1 FROM courses.students WHERE id = $1)",
@@ -59,6 +60,7 @@ async def get_grades(
         conn: asyncpg.Connection = Depends(get_connection)
 ):
     """Получить список оценок"""
+
     query = """
         SELECT g.*, s.first_name, s.last_name, s.group_number, c.title as course_title
         FROM courses.grades g
@@ -115,6 +117,7 @@ async def get_grades(
 @router.get("/{grade_id}", response_model=schemas.GradeWithDetails)
 async def get_grade(grade_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Получить оценку по ID"""
+
     row = await conn.fetchrow(
         """
         SELECT g.*, s.first_name, s.last_name, s.group_number, c.title as course_title
@@ -150,6 +153,7 @@ async def get_grade(grade_id: int, conn: asyncpg.Connection = Depends(get_connec
 @router.put("/{grade_id}", response_model=schemas.Grade)
 async def update_grade(grade_id: int, grade_update: schemas.GradeUpdate, conn: asyncpg.Connection = Depends(get_connection)):
     """Обновить оценку"""
+
     existing = await conn.fetchrow(
         "SELECT id FROM courses.grades WHERE id = $1",
         grade_id
@@ -201,6 +205,7 @@ async def update_grade(grade_id: int, grade_update: schemas.GradeUpdate, conn: a
 @router.delete("/{grade_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_grade(grade_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Удалить оценку"""
+
     result = await conn.execute(
         "DELETE FROM courses.grades WHERE id = $1",
         grade_id
@@ -216,6 +221,7 @@ async def delete_grade(grade_id: int, conn: asyncpg.Connection = Depends(get_con
 @router.get("/average/{student_id}/{course_id}")
 async def get_average_grade(student_id: int, course_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Получить среднюю оценку студента по курсу"""
+
     average = await conn.fetchval(
         """
         SELECT AVG(grade_value) 

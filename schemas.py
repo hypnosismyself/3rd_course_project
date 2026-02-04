@@ -15,14 +15,16 @@ class RoleBase(BaseModel):
 
 class Role(RoleBase):
     id: int
+
     class Config:
         from_attributes = True
 
-# --- User schemas ---
+
 class UserBase(BaseModel):
     username: str
     email: EmailStr
     role_id: int
+
 
 class UserCreate(UserBase):
     password: str
@@ -30,41 +32,46 @@ class UserCreate(UserBase):
     class Config:
         extra = "ignore"
 
+
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     photo_url: Optional[str] = None
     role_id: Optional[int] = None
 
+
 class User(UserBase):
     id: int
     registration_date_time: datetime
     photo_url: Optional[str] = None
+
     class Config:
         from_attributes = True
+
 
 class UserWithRole(User):
     role: Role
 
-# --- Teacher schemas ---
+
 class TeacherBase(BaseModel):
     first_name: str
     last_name: str
     qualification: str
     bio: Optional[str] = None
 
+
 class TeacherCreate(BaseModel):
-    # user fields
     username: str
     password: str
     email: EmailStr
     role_id: int
-    # teacher fields
     first_name: str
     last_name: str
     qualification: str
     bio: Optional[str] = None
+
     class Config:
         extra = "ignore"
+
 
 class TeacherUpdate(BaseModel):
     first_name: Optional[str] = None
@@ -72,33 +79,37 @@ class TeacherUpdate(BaseModel):
     qualification: Optional[str] = None
     bio: Optional[str] = None
 
+
 class Teacher(TeacherBase):
     id: int
     user_id: Optional[int] = None
+
     class Config:
         from_attributes = True
+
 
 class TeacherWithUser(Teacher):
     user: Optional[User] = None
 
-# --- Student schemas ---
+
 class StudentBase(BaseModel):
     first_name: str
     last_name: str
     group_number: str
 
+
 class StudentCreate(BaseModel):
-    # user fields
     username: str
     password: str
     email: EmailStr
     role_id: int
-    # student fields
     first_name: str
     last_name: str
     group_number: str
+
     class Config:
         extra = "ignore"
+
 
 class StudentUpdate(BaseModel):
     first_name: Optional[str] = None
@@ -108,17 +119,18 @@ class StudentUpdate(BaseModel):
 class Student(StudentBase):
     id: int
     user_id: Optional[int] = None
+
     class Config:
         from_attributes = True
 
 class StudentWithUser(Student):
     user: Optional[User] = None
 
-# Course схемы
+
 class CourseBase(BaseModel):
     title: str
     description: str
-    duration: int  # в часах
+    duration: int
     teacher_id: int
 
 class CourseCreate(CourseBase):
@@ -141,7 +153,6 @@ class CourseWithTeacher(Course):
     teacher: Teacher
 
 
-# Enrollment схемы
 class EnrollmentBase(BaseModel):
     student_id: int
     course_id: int
@@ -171,7 +182,6 @@ class EnrollmentWithDetails(Enrollment):
     course: Course
 
 
-# Grade схемы
 class GradeBase(BaseModel):
     student_id: int
     course_id: int
@@ -205,7 +215,6 @@ class GradeWithDetails(Grade):
     course: Course
 
 
-# Attachment схемы
 class AttachmentBase(BaseModel):
     filename: str
     file_type: str
@@ -232,7 +241,6 @@ class AttachmentWithUser(Attachment):
     user: User
 
 
-# Schedule схемы
 class ScheduleBase(BaseModel):
     course_id: int
     start_date_time: datetime
@@ -262,7 +270,6 @@ class ScheduleWithCourse(Schedule):
     course: Course
 
 
-# Report схемы
 class StudentPerformanceReport(BaseModel):
     student_id: int
     student_name: str
@@ -289,7 +296,6 @@ class ScheduleReport(BaseModel):
     courses: List[Dict[str, Any]]
 
 
-# Auth схемы
 class LoginRequest(BaseModel):
     username: str
     password: str

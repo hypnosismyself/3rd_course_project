@@ -13,9 +13,8 @@ router = APIRouter(
 
 @router.get("/", response_model=List[Role])
 async def get_all_roles(conn: asyncpg.Connection = Depends(get_connection)):
-    """
-    Получить список всех ролей из схемы courses.
-    """
+    """Получить список всех ролей"""
+
     try:
         rows = await conn.fetch("SELECT id, name FROM courses.roles ORDER BY id")
         return [dict(row) for row in rows]
@@ -28,9 +27,8 @@ async def get_all_roles(conn: asyncpg.Connection = Depends(get_connection)):
 
 @router.get("/{role_id}", response_model=Role)
 async def get_role_by_id(role_id: int, conn: asyncpg.Connection = Depends(get_connection)):
-    """
-    Получить роль по ID.
-    """
+    """Получить роль по ID"""
+
     row = await conn.fetchrow("SELECT id, name FROM courses.roles WHERE id = $1", role_id)
     if row is None:
         raise HTTPException(

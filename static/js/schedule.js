@@ -1,4 +1,3 @@
-// schedule.js — Bootstrap modal + table rendering
 document.addEventListener('DOMContentLoaded', () => {
   const listBody = document.getElementById('schedule-list');
   const refreshBtn = document.getElementById('refresh-schedule');
@@ -47,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      // If creating requires auth, ensure user is authenticated
       try {
         if (!auth.isAuthenticated()) {
           alert('Требуется вход в систему');

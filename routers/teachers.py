@@ -14,6 +14,8 @@ router = APIRouter(
 
 
 async def table_has_column(conn: asyncpg.Connection, schema: str, table: str, column: str) -> bool:
+    """Проверка столбца в таблице"""
+
     q = """
     SELECT EXISTS(
       SELECT 1 FROM information_schema.columns
@@ -25,17 +27,11 @@ async def table_has_column(conn: asyncpg.Connection, schema: str, table: str, co
 
 @router.post("/", response_model=schemas.TeacherWithUser, status_code=status.HTTP_201_CREATED)
 async def create_teacher(teacher: schemas.TeacherCreate, conn: asyncpg.Connection = Depends(get_connection)):
-    """
-    Create user + teacher (1:1).
-    Supports two schemas:
-      - teachers has user_id column -> INSERT INTO teachers(user_id, ...)
-      - teachers does NOT have user_id -> assume teachers.id == users.id -> INSERT INTO teachers(id, ...)
-    """
+    """Создать прпеодавателя"""
     # Basic validation
     if not teacher.role_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="role_id обязателен")
 
-    # Check role exists (best-effort)
     try:
         role_exists = await conn.fetchval("SELECT EXISTS(SELECT 1 FROM courses.roles WHERE id = $1)", teacher.role_id)
     except Exception:
@@ -44,7 +40,6 @@ async def create_teacher(teacher: schemas.TeacherCreate, conn: asyncpg.Connectio
     if not role_exists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Указанная роль не найдена")
 
-    # Check username/email uniqueness before transaction (friendly error)
     existing = await conn.fetchrow("SELECT id FROM courses.users WHERE username = $1 OR email = $2", teacher.username, teacher.email)
     if existing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Пользователь с таким username или email уже существует")
@@ -52,7 +47,6 @@ async def create_teacher(teacher: schemas.TeacherCreate, conn: asyncpg.Connectio
     async with conn.transaction():
         pwd_hash = await hash_password(teacher.password)
 
-        # create user
         try:
             user_row = await conn.fetchrow(
                 """
@@ -71,13 +65,11 @@ async def create_teacher(teacher: schemas.TeacherCreate, conn: asyncpg.Connectio
 
         user_id = user_row['id']
 
-        # detect schema: does teachers table have user_id column?
         try:
             has_user_id = await table_has_column(conn, 'courses', 'teachers', 'user_id')
         except Exception:
             has_user_id = False
 
-        # insert into teachers accordingly
         try:
             if has_user_id:
                 teacher_row = await conn.fetchrow(
@@ -89,7 +81,6 @@ async def create_teacher(teacher: schemas.TeacherCreate, conn: asyncpg.Connectio
                     user_id, teacher.first_name, teacher.last_name, teacher.qualification, teacher.bio
                 )
             else:
-                # assume teachers.id == users.id
                 teacher_row = await conn.fetchrow(
                     """
                     INSERT INTO courses.teachers (id, first_name, last_name, qualification, bio)
@@ -98,15 +89,14 @@ async def create_teacher(teacher: schemas.TeacherCreate, conn: asyncpg.Connectio
                     """,
                     user_id, teacher.first_name, teacher.last_name, teacher.qualification, teacher.bio
                 )
-                # normalize to include user_id for frontend compatibility
                 teacher_row = dict(teacher_row)
                 teacher_row['user_id'] = user_id
+
         except asyncpg.exceptions.UniqueViolationError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Этот пользователь уже является преподавателем")
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ошибка при создании преподавателя: {e}")
 
-        # prepare response
         teacher_dict = dict(teacher_row) if isinstance(teacher_row, asyncpg.Record) else dict(teacher_row)
         teacher_dict['user'] = dict(user_row)
         return teacher_dict
@@ -119,11 +109,7 @@ async def get_teachers(
         search: Optional[str] = None,
         conn: asyncpg.Connection = Depends(get_connection)
 ):
-    """
-    Return teachers with nested user. Query adapts to schema:
-      - if teachers.user_id exists -> join on t.user_id = u.id and select user fields explicitly
-      - else -> assume teachers.id == users.id and join on t.id = u.id
-    """
+    """Получить преподавателя"""
     try:
         has_user_id = await table_has_column(conn, 'courses', 'teachers', 'user_id')
     except Exception:
@@ -160,7 +146,6 @@ async def get_teachers(
     except asyncpg.exceptions.UndefinedTableError:
         return []
     except asyncpg.exceptions.UndefinedColumnError:
-        # fallback: simple teachers select without user details
         rows = await conn.fetch("SELECT * FROM courses.teachers ORDER BY id OFFSET $1 LIMIT $2", skip, limit)
         teachers = []
         for row in rows:
@@ -187,6 +172,8 @@ async def get_teachers(
 
 @router.get("/{teacher_id}", response_model=schemas.TeacherWithUser)
 async def get_teacher(teacher_id: int, conn: asyncpg.Connection = Depends(get_connection)):
+    """Получить преподавателя"""
+
     try:
         has_user_id = await table_has_column(conn, 'courses', 'teachers', 'user_id')
     except Exception:

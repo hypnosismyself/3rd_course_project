@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query, status, Depends
 from typing import List, Optional
 import asyncpg
-from datetime import date
 import schemas
 from dependencies import get_connection
 
@@ -15,6 +14,7 @@ router = APIRouter(
 @router.post("/", response_model=schemas.Enrollment, status_code=status.HTTP_201_CREATED)
 async def enroll_student(enrollment: schemas.EnrollmentCreate, conn: asyncpg.Connection = Depends(get_connection)):
     """Записать студента на курс"""
+
     async with conn.transaction():
         student_exists = await conn.fetchval(
             "SELECT EXISTS(SELECT 1 FROM courses.students WHERE id = $1)",
@@ -69,6 +69,7 @@ async def get_enrollments(
         conn: asyncpg.Connection = Depends(get_connection)
 ):
     """Получить список записей на курсы"""
+
     query = """
         SELECT sce.*, s.first_name, s.last_name, s.group_number, c.title, c.description
         FROM courses.student_course_enrollment sce
@@ -121,6 +122,7 @@ async def update_grade(
         conn: asyncpg.Connection = Depends(get_connection)
 ):
     """Обновить оценку студента за курс"""
+
     existing = await conn.fetchrow(
         """
         SELECT student_id, course_id FROM courses.student_course_enrollment 
@@ -153,6 +155,7 @@ async def unenroll_student(
         conn: asyncpg.Connection = Depends(get_connection)
 ):
     """Отписать студента от курса"""
+
     result = await conn.execute(
         """
         DELETE FROM courses.student_course_enrollment 
@@ -178,6 +181,7 @@ async def get_enrollments(
         conn: asyncpg.Connection = Depends(get_connection)
 ):
     """Получить список записей на курсы"""
+
     query = """
         SELECT sce.*, s.first_name, s.last_name, s.group_number, c.title, c.description
         FROM courses.student_course_enrollment sce

@@ -1,4 +1,3 @@
-// Работа с модальными окнами
 function openModal(title, content) {
     const modal = document.getElementById('modal');
     const modalTitle = document.getElementById('modalTitle');
@@ -20,7 +19,6 @@ function closeModal() {
     }
 }
 
-// =============== ФОРМА ПОЛЬЗОВАТЕЛЯ ===============
 function showUserForm(user = null) {
     const isEdit = user !== null;
     const title = isEdit ? 'Редактировать пользователя' : 'Добавить пользователя';
@@ -96,7 +94,6 @@ function showUserForm(user = null) {
     }
 }
 
-// =============== ФОРМА РОЛИ ===============
 function showRoleForm(role = null) {
     const isEdit = role !== null;
     const title = isEdit ? 'Редактировать роль' : 'Добавить роль';
@@ -147,7 +144,6 @@ function showRoleForm(role = null) {
     }
 }
 
-// =============== ФОРМА ПРЕПОДАВАТЕЛЯ ===============
 function showTeacherForm(teacher = null) {
     const isEdit = teacher !== null;
     const title = isEdit ? 'Редактировать преподавателя' : 'Добавить преподавателя';
@@ -216,7 +212,6 @@ function showTeacherForm(teacher = null) {
     }
 }
 
-// =============== ФОРМА СТУДЕНТА ===============
 function showStudentForm(student = null) {
     const isEdit = student !== null;
     const title = isEdit ? 'Редактировать студента' : 'Добавить студента';
@@ -280,7 +275,6 @@ function showStudentForm(student = null) {
     }
 }
 
-// =============== ФОРМА КУРСА ===============
 function showCourseForm(course = null) {
     const isEdit = course !== null;
     const title = isEdit ? 'Редактировать курс' : 'Добавить курс';
@@ -344,7 +338,6 @@ function showCourseForm(course = null) {
     }
 }
 
-// =============== ФОРМА ЗАПИСИ НА КУРС ===============
 function showEnrollmentForm(enrollment = null) {
     const isEdit = enrollment !== null;
     const title = isEdit ? 'Редактировать запись на курс' : 'Добавить запись на курс';
@@ -400,7 +393,6 @@ function showEnrollmentForm(enrollment = null) {
             
             try {
                 if (isEdit) {
-                    // Для обновления оценки
                     const gradeUpdate = { grade: formData.grade };
                     await window.fetchData(`/enrollments?student_id=${formData.student_id}&course_id=${formData.course_id}`, {
                         method: 'PUT',
@@ -424,7 +416,6 @@ function showEnrollmentForm(enrollment = null) {
     }
 }
 
-// =============== ФОРМА ОЦЕНКИ ===============
 function showGradeForm(grade = null) {
     const isEdit = grade !== null;
     const title = isEdit ? 'Редактировать оценку' : 'Добавить оценку';
@@ -501,12 +492,10 @@ function showGradeForm(grade = null) {
     }
 }
 
-// =============== ФОРМА РАСПИСАНИЯ ===============
 function showScheduleForm(schedule = null) {
     const isEdit = schedule !== null;
     const title = isEdit ? 'Редактировать занятие' : 'Добавить занятие';
     
-    // Форматируем даты для input[type="datetime-local"]
     const formatForDateTimeInput = (dateString) => {
         if (!dateString) return '';
         const date = new Date(dateString);
@@ -573,7 +562,6 @@ function showScheduleForm(schedule = null) {
     }
 }
 
-// =============== ФУНКЦИИ ДЛЯ РЕДАКТИРОВАНИЯ ===============
 async function editUser(id) {
     try {
         const user = await window.UsersAPI.getById(id);
@@ -663,7 +651,6 @@ async function editSchedule(id) {
     }
 }
 
-// =============== ФУНКЦИИ ДЛЯ УДАЛЕНИЯ ===============
 async function deleteUser(id) {
     if (confirm('Вы уверены, что хотите удалить этого пользователя?')) {
         try {
@@ -762,7 +749,6 @@ async function deleteSchedule(id) {
     }
 }
 
-// =============== ФУНКЦИИ ДЛЯ ЗАГРУЗКИ ДАННЫХ ===============
 async function loadUsersData() {
     try {
         const users = await window.UsersAPI.getAll();
@@ -1101,7 +1087,6 @@ function updateScheduleTable(schedule) {
     tbody.innerHTML = html;
 }
 
-// =============== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===============
 function getRoleName(roleId) {
     const roleNames = {
         1: 'Администратор',
@@ -1111,7 +1096,6 @@ function getRoleName(roleId) {
     return roleNames[roleId] || `Роль ${roleId}`;
 }
 
-// =============== ЭКСПОРТ ===============
 window.showUserForm = showUserForm;
 window.showRoleForm = showRoleForm;
 window.showTeacherForm = showTeacherForm;

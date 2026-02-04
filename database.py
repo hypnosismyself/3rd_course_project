@@ -7,14 +7,12 @@ from dotenv import load_dotenv
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Простые обёртки для хеширования пароля (в проде используйте bcrypt)
 async def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
 async def verify_password(plain_password: str, hashed_password: str) -> bool:
     return hashlib.sha256(plain_password.encode()).hexdigest() == hashed_password
 
-# Примеры helper-ов (если хотите инициализировать пул здесь)
 _pool: Optional[asyncpg.Pool] = None
 
 async def init_pool(min_size: int = 1, max_size: int = 10):

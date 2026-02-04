@@ -14,6 +14,8 @@ router = APIRouter(
 
 
 async def table_has_column(conn: asyncpg.Connection, schema: str, table: str, column: str) -> bool:
+    """Проверка стобца в таблице"""
+
     q = """
     SELECT EXISTS(
       SELECT 1 FROM information_schema.columns
@@ -25,15 +27,10 @@ async def table_has_column(conn: asyncpg.Connection, schema: str, table: str, co
 
 @router.post("/", response_model=schemas.StudentWithUser, status_code=status.HTTP_201_CREATED)
 async def create_student(student: schemas.StudentCreate, conn: asyncpg.Connection = Depends(get_connection)):
-    """
-    Create user + student (1:1). Support both schemas:
-      - students.user_id exists -> insert using user_id
-      - else -> insert using id = user_id (students.id == users.id)
-    """
+    """Создание студента"""
     if not student.role_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="role_id обязателен")
 
-    # Check role existence (best-effort)
     try:
         role_exists = await conn.fetchval("SELECT EXISTS(SELECT 1 FROM courses.roles WHERE id = $1)", student.role_id)
     except Exception:
@@ -42,7 +39,6 @@ async def create_student(student: schemas.StudentCreate, conn: asyncpg.Connectio
     if not role_exists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Указанная роль не найдена")
 
-    # uniqueness check
     existing = await conn.fetchrow("SELECT id FROM courses.users WHERE username = $1 OR email = $2", student.username, student.email)
     if existing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Пользователь с таким username или email уже существует")
@@ -68,7 +64,6 @@ async def create_student(student: schemas.StudentCreate, conn: asyncpg.Connectio
 
         user_id = user_row['id']
 
-        # detect schema
         try:
             has_user_id = await table_has_column(conn, 'courses', 'students', 'user_id')
         except Exception:
@@ -93,9 +88,9 @@ async def create_student(student: schemas.StudentCreate, conn: asyncpg.Connectio
                     """,
                     user_id, student.first_name, student.last_name, student.group_number
                 )
-                # normalize to include user_id for frontend compatibility
                 student_row = dict(student_row)
                 student_row['user_id'] = user_id
+
         except asyncpg.exceptions.UniqueViolationError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Этот пользователь уже является студентом")
         except Exception as e:
@@ -114,11 +109,8 @@ async def get_students(
         group_number: Optional[str] = None,
         conn: asyncpg.Connection = Depends(get_connection)
 ):
-    """
-    Return students with nested user. Query adapts to schema:
-      - if students.user_id exists -> join on s.user_id = u.id and select user fields explicitly
-      - else -> assume students.id == users.id and join on s.id = u.id
-    """
+    """Получить студента"""
+
     try:
         has_user_id = await table_has_column(conn, 'courses', 'students', 'user_id')
     except Exception:
@@ -160,7 +152,6 @@ async def get_students(
     except asyncpg.exceptions.UndefinedTableError:
         return []
     except asyncpg.exceptions.UndefinedColumnError:
-        # fallback to simple students select
         rows = await conn.fetch("SELECT * FROM courses.students ORDER BY id OFFSET $1 LIMIT $2", skip, limit)
         students = []
         for row in rows:
@@ -172,7 +163,6 @@ async def get_students(
     students = []
     for row in rows:
         student_dict = dict(row)
-        # build user object with required fields (role_id, registration_date_time) present
         student_dict['user'] = {
             'id': row.get('user_id'),
             'username': row.get('username'),

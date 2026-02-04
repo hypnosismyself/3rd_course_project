@@ -15,6 +15,7 @@ router = APIRouter(
 @router.post("/", response_model=schemas.Schedule, status_code=status.HTTP_201_CREATED)
 async def create_schedule_item(schedule: schemas.ScheduleCreate, conn: asyncpg.Connection = Depends(get_connection)):
     """Создать элемент расписания"""
+
     async with conn.transaction():
         course_exists = await conn.fetchval(
             "SELECT EXISTS(SELECT 1 FROM courses.courses WHERE id = $1)",
@@ -53,6 +54,7 @@ async def get_schedule(
         conn: asyncpg.Connection = Depends(get_connection)
 ):
     """Получить расписание"""
+
     query = """
         SELECT s.*, c.title, c.description, c.duration, t.first_name, t.last_name
         FROM courses.schedule s
@@ -104,6 +106,7 @@ async def get_schedule(
 @router.get("/{schedule_id}", response_model=schemas.ScheduleWithCourse)
 async def get_schedule_item(schedule_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Получить элемент расписания по ID"""
+
     row = await conn.fetchrow(
         """
         SELECT s.*, c.title, c.description, c.duration, t.first_name, t.last_name
@@ -139,6 +142,7 @@ async def get_schedule_item(schedule_id: int, conn: asyncpg.Connection = Depends
 @router.put("/{schedule_id}", response_model=schemas.Schedule)
 async def update_schedule_item(schedule_id: int, schedule_update: schemas.ScheduleUpdate, conn: asyncpg.Connection = Depends(get_connection)):
     """Обновить элемент расписания"""
+
     existing = await conn.fetchrow(
         "SELECT id FROM courses.schedule WHERE id = $1",
         schedule_id
@@ -192,6 +196,7 @@ async def update_schedule_item(schedule_id: int, schedule_update: schemas.Schedu
 @router.delete("/{schedule_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_schedule_item(schedule_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Удалить элемент расписания"""
+
     result = await conn.execute("DELETE FROM courses.schedule WHERE id = $1", schedule_id)
     if result == "DELETE 0":
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Элемент расписания не найден")
@@ -200,6 +205,7 @@ async def delete_schedule_item(schedule_id: int, conn: asyncpg.Connection = Depe
 @router.get("/daily/{day}")
 async def get_daily_schedule(day: date, conn: asyncpg.Connection = Depends(get_connection)):
     """Получить расписание на день"""
+
     rows = await conn.fetch(
         """
         SELECT s.*, c.title, c.description, t.first_name, t.last_name
@@ -228,6 +234,7 @@ async def get_daily_schedule(day: date, conn: asyncpg.Connection = Depends(get_c
 @router.get("/student/{student_id}")
 async def get_student_schedule(student_id: int, days_ahead: int = Query(7, ge=1, le=30), conn: asyncpg.Connection = Depends(get_connection)):
     """Получить расписание студента"""
+
     student_exists = await conn.fetchval(
         "SELECT EXISTS(SELECT 1 FROM courses.students WHERE id = $1)",
         student_id
@@ -266,6 +273,7 @@ async def get_student_schedule(student_id: int, days_ahead: int = Query(7, ge=1,
 @router.get("/teacher/{teacher_id}")
 async def get_teacher_schedule(teacher_id: int, days_ahead: int = Query(7, ge=1, le=30), conn: asyncpg.Connection = Depends(get_connection)):
     """Получить расписание преподавателя"""
+
     teacher_exists = await conn.fetchval(
         "SELECT EXISTS(SELECT 1 FROM courses.teachers WHERE id = $1)",
         teacher_id

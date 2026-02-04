@@ -1,10 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query, status, Depends
-from typing import List
 import asyncpg
 from datetime import date, datetime
-import schemas
-import csv
-import json
 from dependencies import get_connection
 
 router = APIRouter(
@@ -17,6 +13,7 @@ router = APIRouter(
 @router.get("/students-by-course/{course_id}")
 async def get_students_by_course_report(course_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Отчет: Список студентов по курсу"""
+
     rows = await conn.fetch(
         """
         SELECT 
@@ -62,6 +59,7 @@ async def get_students_by_course_report(course_id: int, conn: asyncpg.Connection
 @router.get("/performance-report/{course_id}")
 async def get_performance_report(course_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Отчет по успеваемости студентов"""
+
     rows = await conn.fetch(
         """
         SELECT 
@@ -112,6 +110,7 @@ async def get_performance_report(course_id: int, conn: asyncpg.Connection = Depe
 @router.get("/course-report")
 async def get_course_report(conn: asyncpg.Connection = Depends(get_connection)):
     """Отчет по курсам и преподавателям"""
+
     rows = await conn.fetch(
         """
         SELECT 
@@ -143,6 +142,7 @@ async def get_course_report(conn: asyncpg.Connection = Depends(get_connection)):
 @router.get("/schedule-report/{start_date}/{end_date}")
 async def get_schedule_report(start_date: date, end_date: date, conn: asyncpg.Connection = Depends(get_connection)):
     """Отчет: Расписание курсов и занятий"""
+
     rows = await conn.fetch(
         """
         SELECT 
@@ -191,6 +191,7 @@ async def get_schedule_report(start_date: date, end_date: date, conn: asyncpg.Co
 @router.get("/student-performance/{student_id}")
 async def get_student_performance_report(student_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Ведомость успеваемости студента"""
+
     student_info = await conn.fetchrow(
         """
         SELECT s.*, u.username, u.email
@@ -265,6 +266,7 @@ async def get_student_performance_report(student_id: int, conn: asyncpg.Connecti
 @router.get("/export/csv/students/{course_id}")
 async def export_students_csv(course_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Экспорт списка студентов курса в CSV"""
+
     rows = await conn.fetch(
         """
         SELECT 
@@ -297,6 +299,7 @@ async def export_students_csv(course_id: int, conn: asyncpg.Connection = Depends
 @router.get("/students-by-course/{course_id}")
 async def get_students_by_course_report(course_id: int, conn: asyncpg.Connection = Depends(get_connection)):
     """Отчет: Список студентов по курсу"""
+
     try:
         rows = await conn.fetch(
             """
@@ -329,7 +332,6 @@ async def get_students_by_course_report(course_id: int, conn: asyncpg.Connection
             "students": []
         }
 
-    # Получаем информацию о курсе (обрабатываем отсутствие таблицы courses тоже)
     course_info = None
     try:
         course_info = await conn.fetchrow("SELECT title, description FROM courses.courses WHERE id = $1", course_id)
