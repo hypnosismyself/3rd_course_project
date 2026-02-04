@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const rows = await api.get('/teachers/');
       if (!Array.isArray(rows) || !rows.length) {
         list.innerHTML = '<tr><td colspan="4" class="text-center py-4">Нет данных</td></tr>';
-        // ensure uiAuth processes visibility
         window.uiAuth && window.uiAuth.updateAll && window.uiAuth.updateAll();
         return;
       }
@@ -23,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const userDisplay = r.user ? `${r.user.username} (${r.user.email})` : `ID:${r.user_id}`;
         const actions = `
           <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-secondary btn-edit" data-id="${r.id}" data-auth-only data-roles="Администратор,Преподаватель">Изменить</button>
-            <button class="btn btn-sm btn-danger btn-delete" data-id="${r.id}" data-auth-only data-role="Администратор">Удалить</button>
+            <button class="btn btn-sm btn-secondary btn-edit" data-id="${r.id}" data-auth-only data-roles="admin,teacher">Изменить</button>
+            <button class="btn btn-sm btn-danger btn-delete" data-id="${r.id}" data-auth-only data-role="admin">Удалить</button>
           </div>`;
         return `<tr>
           <td>${r.first_name} ${r.last_name}</td>
@@ -61,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await api.del(`/teachers/${id}`);
             await loadTeachers();
           } catch (err) {
-            alert('О��ибка удаления: ' + (err.body?.detail || err.message || JSON.stringify(err)));
+            alert('Ошибка удаления: ' + (err.body?.detail || err.message || JSON.stringify(err)));
           }
         });
       });

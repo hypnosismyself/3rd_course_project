@@ -20,11 +20,11 @@
       </button>
       <div class="collapse navbar-collapse" id="mainNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="/pages/students.html">Студенты</a></li>
+          <li class="nav-item" data-auth-only><a class="nav-link" href="/pages/students.html">Студенты</a></li>
           <li class="nav-item"><a class="nav-link" href="/pages/courses.html">Курсы</a></li>
-          <li class="nav-item"><a class="nav-link" href="/pages/teachers.html">Преподаватели</a></li>
-          <li class="nav-item"><a class="nav-link" href="/pages/schedule.html">Расписание</a></li>
-          <li class="nav-item"><a class="nav-link" href="/pages/reports.html">Отчёты</a></li>
+          <li class="nav-item" data-auth-only><a class="nav-link" href="/pages/teachers.html">Преподаватели</a></li>
+          <li class="nav-item" data-auth-only><a class="nav-link" href="/pages/schedule.html">Расписание</a></li>
+          <li class="nav-item" data-auth-only data-roles="admin,teacher"><a class="nav-link" href="/pages/reports.html">Отчёты</a></li>
           <li class="nav-item"><a id="auth-link" class="nav-link" href="/pages/login.html">Вход</a></li>
         </ul>
       </div>
@@ -34,7 +34,7 @@
   <main class="container my-5">
     <div class="row g-4">
       <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
+        <div class="card h-100 shadow-sm" data-auth-only>
           <div class="card-body">
             <h5 class="card-title">Студенты</h5>
             <p class="card-text">Управление студентами, их курсами и успеваемостью.</p>
@@ -54,7 +54,7 @@
       </div>
 
       <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
+        <div class="card h-100 shadow-sm" data-auth-only>
           <div class="card-body">
             <h5 class="card-title">Преподаватели</h5>
             <p class="card-text">Добавление и редактирование преподавателей.</p>

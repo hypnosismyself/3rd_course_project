@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const teacher = r.teacher ? `${r.teacher.first_name} ${r.teacher.last_name}` : (r.teacher_id ? `ID:${r.teacher_id}` : '-');
         const actions = `
           <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-secondary btn-edit" data-id="${r.id}" data-auth-only data-roles="Администратор,Преподаватель">Изменить</button>
-            <button class="btn btn-sm btn-danger btn-delete" data-id="${r.id}" data-auth-only data-role="Администратор">Удалить</button>
+            <button class="btn btn-sm btn-secondary btn-edit" data-id="${r.id}" data-auth-only data-roles="admin,teacher">Изменить</button>
+            <button class="btn btn-sm btn-danger btn-delete" data-id="${r.id}" data-auth-only data-role="admin">Удалить</button>
           </div>`;
         return `<tr>
           <td>${r.title}</td>

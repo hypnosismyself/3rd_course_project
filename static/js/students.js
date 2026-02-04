@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const userDisplay = r.user ? `${r.user.username} (${r.user.email})` : `ID:${r.user_id}`;
         const actions = `
           <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-secondary btn-edit" data-id="${r.id}" data-auth-only data-roles="Администратор,Преподаватель">Изменить</button>
-            <button class="btn btn-sm btn-danger btn-delete" data-id="${r.id}" data-auth-only data-role="Администратор">Удалить</button>
+            <button class="btn btn-sm btn-secondary btn-edit" data-id="${r.id}" data-auth-only data-roles="admin,teacher">Изменить</button>
+            <button class="btn btn-sm btn-danger btn-delete" data-id="${r.id}" data-auth-only data-role="admin">Удалить</button>
           </div>`;
         return `<tr>
           <td><img src="${photo}" style="width:48px;height:48px;object-fit:cover" class="rounded" onerror="this.src='/assets/default-user.png'"></td>
@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </tr>`;
       }).join('');
 
-      // attach handlers after render
       document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', async () => {
           const id = btn.getAttribute('data-id');
@@ -98,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const payload = Object.fromEntries(new FormData(form).entries());
-      payload.role_id = Number(payload.role_id);
+      payload.role_id = 1;
       try {
         await api.post('/students/', payload);
         bsModal?.hide();

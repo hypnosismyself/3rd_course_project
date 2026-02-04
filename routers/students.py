@@ -28,6 +28,7 @@ async def table_has_column(conn: asyncpg.Connection, schema: str, table: str, co
 @router.post("/", response_model=schemas.StudentWithUser, status_code=status.HTTP_201_CREATED)
 async def create_student(student: schemas.StudentCreate, conn: asyncpg.Connection = Depends(get_connection)):
     """Создание студента"""
+
     if not student.role_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="role_id обязателен")
 
@@ -174,3 +175,126 @@ async def get_students(
         students.append(student_dict)
 
     return students
+
+@router.get("/{student_id}", response_model=schemas.StudentWithUser)
+async def get_student(
+    student_id: int,
+    conn: asyncpg.Connection = Depends(get_connection)
+):
+    """Получить студента"""
+
+    try:
+        has_user_id = await table_has_column(conn, 'courses', 'students', 'user_id')
+    except Exception:
+        has_user_id = False
+
+    try:
+        if has_user_id:
+            row = await conn.fetchrow(
+                """
+                SELECT s.*, 
+                       u.id AS user_id,
+                       u.username,
+                       u.email,
+                       u.photo_url,
+                       u.role_id,
+                       u.registration_date_time
+                FROM courses.students s
+                JOIN courses.users u ON s.user_id = u.id
+                WHERE s.id = $1
+                """,
+                student_id
+            )
+        else:
+            row = await conn.fetchrow(
+                """
+                SELECT s.*, 
+                       u.id AS user_id,
+                       u.username,
+                       u.email,
+                       u.photo_url,
+                       u.role_id,
+                       u.registration_date_time
+                FROM courses.students s
+                JOIN courses.users u ON s.id = u.id
+                WHERE s.id = $1
+                """,
+                student_id
+            )
+    except asyncpg.exceptions.UndefinedTableError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Студент не найден"
+        )
+    except asyncpg.exceptions.UndefinedColumnError:
+        row = await conn.fetchrow(
+            "SELECT * FROM courses.students WHERE id = $1",
+            student_id
+        )
+
+    if not row:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Студент не найден"
+        )
+
+    res = dict(row)
+
+    res["user"] = (
+        {
+            "id": row.get("user_id"),
+            "username": row.get("username"),
+            "email": row.get("email"),
+            "photo_url": row.get("photo_url"),
+            "role_id": row.get("role_id"),
+            "registration_date_time": row.get("registration_date_time"),
+        }
+        if "username" in row
+        else None
+    )
+
+    return res
+
+@router.patch("/{student_id}", response_model=schemas.StudentWithUser)
+async def update_student(
+    student_id: int,
+    data: schemas.StudentUpdate,
+    conn: asyncpg.Connection = Depends(get_connection)
+):
+    """Обновить данные студента"""
+
+    values = {k: v for k, v in data.dict().items() if v is not None}
+    if not values:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Нет данных для обновления"
+        )
+
+    set_parts = []
+    params = []
+    idx = 1
+
+    for field, value in values.items():
+        set_parts.append(f"{field} = ${idx}")
+        params.append(value)
+        idx += 1
+
+    params.append(student_id)
+
+    query = f"""
+        UPDATE courses.students
+        SET {", ".join(set_parts)}
+        WHERE id = ${idx}
+        RETURNING *
+    """
+
+    row = await conn.fetchrow(query, *params)
+
+    if not row:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Студент не найден"
+        )
+
+    # ⬇ используем существующий GET
+    return await get_student(student_id, conn)

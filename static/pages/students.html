@@ -20,8 +20,8 @@
     <h2>Студенты</h2>
     <div>
       <button id="refresh-students" class="btn btn-outline-secondary me-2" data-auth-only>Обновить</button>
-      <button id="create-student-btn" class="btn btn-primary" data-auth-only data-roles="Администратор,Преподаватель">Добавить студента</button>
-      <button id="print-students" class="btn btn-outline-secondary" data-auth-only>Печать</button>
+      <button id="create-student-btn" class="btn btn-primary" data-auth-only data-roles="admin,teacher">Добавить студента</button>
+      <button id="print-students" class="btn btn-outline-secondary" data-auth-only data-roles="admin,teacher">Печать</button>
     </div>
   </div>
 
@@ -57,13 +57,6 @@
         <div class="mb-2"><label class="form-label">Логин<input name="username" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Пароль<input name="password" type="password" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Эл. почта<input name="email" type="email" class="form-control" required></label></div>
-        <div class="mb-2">
-          <label class="form-label">Роль
-            <select disabled="disabled" name="role_id" id="student-role-select" class="form-select" required>
-              <option value="">Загрузка ролей...</option>
-            </select>
-          </label>
-        </div>
         <div class="mb-2"><label class="form-label">Имя<input name="first_name" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Фамилия<input name="last_name" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Группа<input name="group_number" class="form-control" required></label></div>

@@ -20,7 +20,7 @@
     <h2>Преподаватели</h2>
     <div>
       <button id="refresh-teachers" class="btn btn-outline-secondary me-2" data-auth-only>Обновить</button>
-      <button id="create-teacher-btn" class="btn btn-primary" data-auth-only data-roles="Администратор">Добавить преподавателя</button>
+      <button id="create-teacher-btn" class="btn btn-primary" data-auth-only data-roles="admin">Добавить преподавателя</button>
     </div>
   </div>
 
@@ -32,7 +32,7 @@
             <tr>
               <th>ФИО</th>
               <th>Квалификация</th>
-              <th>User</th>
+              <th>Пользователь</th>
               <th style="width:220px">Действия</th>
             </tr>
           </thead>
@@ -64,7 +64,7 @@
         <div class="mb-2"><label class="form-label">Имя<input name="first_name" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Фамилия<input name="last_name" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Квалификация<input name="qualification" class="form-control" required></label></div>
-        <div class="mb-2"><label class="form-label">Bio<textarea name="bio" class="form-control"></textarea></label></div>
+        <div class="mb-2"><label class="form-label">О себе<textarea name="bio" class="form-control"></textarea></label></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
@@ -86,7 +86,7 @@
         <div class="mb-2"><label class="form-label">Имя<input name="first_name" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Фамилия<input name="last_name" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Квалификация<input name="qualification" class="form-control" required></label></div>
-        <div class="mb-2"><label class="form-label">Bio<textarea name="bio" class="form-control"></textarea></label></div>
+        <div class="mb-2"><label class="form-label">Дополнительно<textarea name="bio" class="form-control"></textarea></label></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>

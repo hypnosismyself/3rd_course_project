@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query, status, Depends
 from typing import List, Optional
 import asyncpg
+from datetime import timedelta
 import schemas
 from dependencies import get_connection
 
@@ -11,30 +12,25 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=schemas.Course, status_code=status.HTTP_201_CREATED)
-async def create_course(course: schemas.CourseCreate, conn: asyncpg.Connection = Depends(get_connection)):
-    """Создать новый курс"""
+@router.post("/", response_model=schemas.Course)
+async def create_course(data: schemas.CourseCreate, conn: asyncpg.Connection = Depends(get_connection)
+):
+    """Создать курс"""
 
-    async with conn.transaction():
-        teacher_exists = await conn.fetchval(
-            "SELECT EXISTS(SELECT 1 FROM courses.teachers WHERE id = $1)",
-            course.teacher_id
-        )
-        if not teacher_exists:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Указанный преподаватель не существует"
-            )
+    duration = timedelta(days=data.duration)
 
-        row = await conn.fetchrow(
-            """
-            INSERT INTO courses.courses (title, description, duration, teacher_id)
-            VALUES ($1, $2, $3, $4)
-            RETURNING id, title, description, duration, teacher_id
-            """,
-            course.title, course.description, course.duration, course.teacher_id
-        )
-        return dict(row)
+    row = await conn.fetchrow(
+        """
+        INSERT INTO courses.courses (title, teacher_id, duration)
+        VALUES ($1, $2, $3)
+        RETURNING *
+        """,
+        data.title,
+        data.teacher_id,
+        duration
+    )
+
+    return dict(row)
 
 
 @router.get("/", response_model=List[schemas.CourseWithTeacher])

@@ -19,7 +19,7 @@
     <h2>Курсы</h2>
     <div>
       <button id="refresh-courses" class="btn btn-outline-secondary me-2" data-auth-only>Обновить</button>
-      <button id="create-course" class="btn btn-primary" data-auth-only data-roles="Администратор,Преподаватель">Создать курс</button>
+      <button id="create-course" class="btn btn-primary" data-auth-only data-roles="admin,teacher">Создать курс</button>
     </div>
   </div>
 
@@ -60,9 +60,10 @@
         <label class="form-label mt-2">Длительность (часы)
           <input name="duration" type="number" class="form-control" required>
         </label>
-        <label class="form-label mt-2">Teacher ID
-          <input name="teacher_id" type="number" class="form-control" required>
-        </label>
+        <label for="teacher">Преподаватель</label>
+          <select id="teacher" class="form-select">
+            <option value="">Выберите преподавателя</option>
+          </select>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>

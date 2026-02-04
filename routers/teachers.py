@@ -28,7 +28,7 @@ async def table_has_column(conn: asyncpg.Connection, schema: str, table: str, co
 @router.post("/", response_model=schemas.TeacherWithUser, status_code=status.HTTP_201_CREATED)
 async def create_teacher(teacher: schemas.TeacherCreate, conn: asyncpg.Connection = Depends(get_connection)):
     """Создать прпеодавателя"""
-    # Basic validation
+
     if not teacher.role_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="role_id обязателен")
 
@@ -219,3 +219,46 @@ async def get_teacher(teacher_id: int, conn: asyncpg.Connection = Depends(get_co
     } if 'username' in row else None
 
     return res
+
+@router.patch("/{teacher_id}", response_model=schemas.TeacherWithUser)
+async def update_teacher(
+    teacher_id: int,
+    data: schemas.TeacherUpdate,
+    conn: asyncpg.Connection = Depends(get_connection)
+):
+    """Обновить данные преподавателя"""
+
+    values = {k: v for k, v in data.dict().items() if v is not None}
+    if not values:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Нет данных для обновления"
+        )
+
+    set_parts = []
+    params = []
+    idx = 1
+
+    for field, value in values.items():
+        set_parts.append(f"{field} = ${idx}")
+        params.append(value)
+        idx += 1
+
+    params.append(teacher_id)
+
+    query = f"""
+        UPDATE courses.teachers
+        SET {", ".join(set_parts)}
+        WHERE id = ${idx}
+        RETURNING *
+    """
+
+    row = await conn.fetchrow(query, *params)
+
+    if not row:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Преподаватель не найден"
+        )
+
+    return await get_teacher(teacher_id, conn)
