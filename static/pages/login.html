@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Вход — Система онлайн-курсов</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-white bg-white border-bottom">
+  <div class="container">
+    <a class="navbar-brand" href="/index.html">Система онлайн-курсов</a>
+
+    <div class="ms-auto">
+      <a id="auth-link" class="btn btn-outline-primary" href="/pages/login.html">Вход</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div id="auth-card" class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title" id="auth-title">Вход</h5>
+
+          <form id="login-form" class="needs-validation" novalidate>
+            <div class="mb-3">
+              <label class="form-label">Логин</label>
+              <input name="username" class="form-control" required />
+              <div class="invalid-feedback">Введите логин</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Пароль</label>
+              <input name="password" type="password" class="form-control" required />
+              <div class="invalid-feedback">Введите пароль</div>
+            </div>
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-primary">Войти</button>
+            </div>
+          </form>
+
+          <div id="profile-section" style="display:none;">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <img id="profile-photo" src="/assets/default-user.png" alt="photo" class="rounded" style="width:72px;height:72px;object-fit:cover" />
+              <div>
+                <h6 id="profile-name" class="mb-0">Имя Фамилия</h6>
+                <div id="profile-username" class="text-muted small"></div>
+                <div id="profile-role" class="text-muted small"></div>
+              </div>
+            </div>
+
+            <form id="upload-photo-form" enctype="multipart/form-data" class="mb-3">
+              <div class="mb-2">
+                <label class="form-label">Загрузить фото</label>
+                <input type="file" name="file" accept="image/*" class="form-control" required />
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-primary" type="submit">Загрузить</button>
+                <button id="logout-btn" class="btn btn-outline-secondary" type="button">Выйти</button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="py-3 bg-white border-top">
+  <div class="container text-center text-muted">© 2026 Система онлайн-курсов<!-- ...весь файл остается тот же, ниже — обновлённый inline-скрипт, который должен заменить старый обработчик загрузки фото... -->
+<!-- ...весь файл остается тот же, ниже — обновлённый inline-скрипт, который должен заменить старый обработчик загрузки фото... -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const uploadForm = document.getElementById('upload-photo-form');
+  const logoutBtn = document.getElementById('logout-btn');
+
+  if (uploadForm) {
+    uploadForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!window.auth || !window.api) { alert('Auth/API не доступны'); return; }
+      if (!auth.isAuthenticated()) { alert('Требуется вход'); return; }
+
+      // Получаем подтверждённый user id с сервера, если currentUser().id ненадёжный
+      let u = auth.currentUser();
+      try {
+        const me = await auth.fetchMe();
+        if (me && me.id) u = me;
+      } catch (e) {
+        // fetchMe может упасть — оставим currentUser, но проверим id
+      }
+
+      if (!u || !u.id) { alert('Не удалось определить пользователя'); return; }
+
+      // Если id — не число, попробуем взять числов id из /users/me
+      let userId = u.id;
+      if (typeof userId === 'string' && !/^\d+$/.test(userId)) {
+        // fetchMe again to try to get numeric id
+        try {
+          const me2 = await auth.fetchMe();
+          if (me2 && me2.id) userId = me2.id;
+        } catch (e) {}
+      }
+
+      if (!userId) { alert('Не удалось определить числовой user id'); return; }
+
+      const fileInput = uploadForm.querySelector('input[type=file]');
+      if (!fileInput || !fileInput.files.length) { alert('Выберите файл'); return; }
+
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+
+      try {
+        const res = await api.upload(`/users/${userId}/upload-photo`, formData);
+        const profilePhoto = document.getElementById('profile-photo');
+        if (profilePhoto) {
+          profilePhoto.src = res.photo_url || (res.filename ? `/uploads/photos/${res.filename}` : profilePhoto.src);
+        }
+        alert('Фото загружено');
+      } catch (err) {
+        console.error('Upload error object:', err);
+        let msg = 'Неизвестная ошибка';
+        if (err && err.body) {
+          if (typeof err.body === 'string' && err.body.trim()) msg = err.body;
+          else if (typeof err.body === 'object') {
+            // Pydantic/fastapi validation errors often have detail array
+            if (Array.isArray(err.body.detail)) msg = JSON.stringify(err.body.detail);
+            else msg = err.body.detail || err.body.message || JSON.stringify(err.body);
+          } else msg = String(err.body);
+        } else if (err && err.message) {
+          msg = err.message;
+        }
+        alert('Ошибка загрузки: ' + msg);
+      }
+    });
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      auth.logout();
+      location.reload();
+    });
+  }
+});
+</script></div>
+</footer>
+
+<!-- Core scripts: order matters -->
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/ui-auth.js"></script>
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Upload photo handler uses api.upload and relies on auth being present -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const uploadForm = document.getElementById('upload-photo-form');
+  const logoutBtn = document.getElementById('logout-btn');
+
+  if (uploadForm) {
+    uploadForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!auth.isAuthenticated()) { alert('Требуется вход'); return; }
+      const u = auth.currentUser();
+      if (!u || !u.id) { alert('Не удалось определить пользователя'); return; }
+
+      const fileInput = uploadForm.querySelector('input[type=file]');
+      if (!fileInput.files.length) { alert('Выберите файл'); return; }
+
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+
+      try {
+        const res = await api.upload(`/users/${u.id}/upload-photo`, formData);
+        // update photo on page
+        const profilePhoto = document.getElementById('profile-photo');
+        if (profilePhoto) {
+          profilePhoto.src = res.photo_url || (res.filename ? `/uploads/photos/${res.filename}` : profilePhoto.src);
+        }
+        alert('Фото загружено');
+      } catch (err) {
+        // log full error for debugging
+        console.error('Upload error object:', err);
+        // prefer structured message from err.body if present
+        let msg = err?.body?.detail || err?.body?.message;
+        if (!msg) {
+          if (err?.body && typeof err.body === 'object') {
+            msg = JSON.stringify(err.body);
+          } else {
+            msg = err?.message || String(err);
+          }
+        }
+        alert('Ошибка загрузки: ' + msg);
+      }
+    });
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      auth.logout();
+      location.reload();
+    });
+  }
+});
+</script>
+</body>
+</html>

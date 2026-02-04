@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Расписание — Education Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-white bg-white border-bottom">
+  <div class="container">
+    <a class="navbar-brand" href="/index.html">Education Portal</a>
+  </div>
+</nav>
+
+<main class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Расписание</h2>
+    <div>
+      <button id="refresh-schedule" class="btn btn-outline-secondary me-2" data-auth-only>Обновить</button>
+      <!-- Добавление записи: Администратор и Преподаватель -->
+      <button id="create-schedule" class="btn btn-primary" data-auth-only data-roles="Администратор,Преподаватель">Добавить запись</button>
+      <button id="print-schedule" class="btn btn-outline-secondary ms-2" data-auth-only>Печать</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="schedule-table">
+          <thead class="table-light">
+            <tr><th>Курс</th><th>Начало</th><th>Окончание</th><th>Длительность (ч)</th><th style="width:180px">Действия</th></tr>
+          </thead>
+          <tbody id="schedule-list"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Modal for schedule item (no name="id") -->
+<div class="modal fade" id="scheduleModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form id="schedule-form" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Добавить элемент расписания</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label">Course ID
+          <input name="course_id" type="number" class="form-control" required>
+        </label>
+        <label class="form-label mt-2">Start
+          <input name="start_date_time" type="datetime-local" class="form-control" required>
+        </label>
+        <label class="form-label mt-2">End
+          <input name="end_date_time" type="datetime-local" class="form-control" required>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-primary" data-auth-only data-roles="Администратор,Преподаватель">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/ui-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/schedule.js"></script>
+</body>
+</html>

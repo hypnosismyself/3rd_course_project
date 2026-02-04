@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Отчёты — Система онлайн-курсов</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-white bg-white border-bottom">
+  <div class="container">
+    <a class="navbar-brand" href="/index.html">Система онлайн-курсов</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="/pages/courses.html">Курсы</a></li>
+        <li class="nav-item"><a class="nav-link" href="/pages/teachers.html">Преподаватели</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Отчёты</h2>
+    <div>
+      <input id="report-course-id" class="form-control d-inline-block" style="width:140px" placeholder="Course ID">
+      <button id="students-by-course" class="btn btn-outline-primary ms-2">CSV</button>
+      <button id="performance-report" class="btn btn-primary ms-2">Успеваемость</button>
+      <button id="course-report" class="btn btn-secondary ms-2">Курсы</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">График успеваемости</h5>
+          <canvas id="performance-chart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div id="report-output" class="card p-3">
+        <pre id="report-json" class="small mb-0"></pre>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/ui-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="/js/reports.js"></script>
+</body>
+</html>

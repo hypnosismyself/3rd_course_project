@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Студенты — Education Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-white bg-white border-bottom">
+  <div class="container">
+    <a class="navbar-brand" href="/index.html">Education Portal</a>
+  </div>
+</nav>
+
+<main class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Студенты</h2>
+    <div>
+      <button id="refresh-students" class="btn btn-outline-secondary me-2" data-auth-only>Обновить</button>
+      <!-- До��авить студента: Администратор и Преподаватель -->
+      <button id="create-student-btn" class="btn btn-primary" data-auth-only data-roles="Администратор,Преподаватель">Добавить студента</button>
+      <button id="print-students" class="btn btn-outline-secondary" data-auth-only>Печать</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="students-table">
+          <thead class="table-light">
+            <tr>
+              <th>Фото</th>
+              <th>ФИО</th>
+              <th>Группа</th>
+              <th>User</th>
+              <th style="width:180px">Действия</th>
+            </tr>
+          </thead>
+          <tbody id="students-list"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Modal create student (includes user fields) -->
+<div class="modal fade" id="studentModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form id="student-form" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Создать ��тудента и пользователя</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <h6 class="mb-2">Пользователь</h6>
+        <div class="mb-2"><label class="form-label">Username<input name="username" class="form-control" required></label></div>
+        <div class="mb-2"><label class="form-label">Пароль<input name="password" type="password" class="form-control" required></label></div>
+        <div class="mb-2"><label class="form-label">Email<input name="email" type="email" class="form-control" required></label></div>
+        <div class="mb-2">
+          <label class="form-label">Роль
+            <select name="role_id" id="student-role-select" class="form-select" required>
+              <option value="">Загрузка ролей...</option>
+            </select>
+          </label>
+        </div>
+
+        <hr/>
+        <h6 class="mb-2">Студент</h6>
+        <div class="mb-2"><label class="form-label">Имя<input name="first_name" class="form-control" required></label></div>
+        <div class="mb-2"><label class="form-label">Фамилия<input name="last_name" class="form-control" required></label></div>
+        <div class="mb-2"><label class="form-label">Группа<input name="group_number" class="form-control" required></label></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-primary">Создать</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div class="modal fade" id="studentEditModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form id="student-edit-form" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Редактировать студента</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id">
+        <div class="mb-2"><label class="form-label">Имя<input name="first_name" class="form-control" required></label></div>
+        <div class="mb-2"><label class="form-label">Фамилия<input name="last_name" class="form-control" required></label></div>
+        <div class="mb-2"><label class="form-label">Группа<input name="group_number" class="form-control" required></label></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-primary" data-auth-only data-roles="Администратор,Преподаватель">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/ui-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/students.js"></script>
+</body>
+</html>
