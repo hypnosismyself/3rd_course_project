@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Преподаватели — Education Portal</title>
+  <title>Преподаватели</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css" />
@@ -11,7 +11,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-white bg-white border-bottom">
   <div class="container">
-    <a class="navbar-brand" href="/index.html">Education Portal</a>
+    <a class="navbar-brand" href="/index.html">Главная</a>
   </div>
 </nav>
 
@@ -43,19 +43,18 @@
   </div>
 </main>
 
-<!-- Modal create teacher -->
+<!-- Окно создания преподавателя -->
 <div class="modal fade" id="teacherModal" tabindex="-1">
   <div class="modal-dialog">
     <form id="teacher-form" class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Создать преподавателя и пользователя</h5>
+        <h5 class="modal-title">Новый преподаватель</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <h6 class="mb-2">Пользователь</h6>
-        <div class="mb-2"><label class="form-label">Username<input name="username" class="form-control" required></label></div>
+        <div class="mb-2"><label class="form-label">Логин<input name="username" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Пароль<input name="password" type="password" class="form-control" required></label></div>
-        <div class="mb-2"><label class="form-label">Email<input name="email" type="email" class="form-control" required></label></div>
+        <div class="mb-2"><label class="form-label">Эл. почта<input name="email" type="email" class="form-control" required></label></div>
         <div class="mb-2">
           <label class="form-label">Роль
             <select name="role_id" id="teacher-role-select" class="form-select" required>
@@ -63,9 +62,6 @@
             </select>
           </label>
         </div>
-
-        <hr/>
-        <h6 class="mb-2">Преподаватель</h6>
         <div class="mb-2"><label class="form-label">Имя<input name="first_name" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Фамилия<input name="last_name" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Квалификация<input name="qualification" class="form-control" required></label></div>
@@ -79,7 +75,7 @@
   </div>
 </div>
 
-<!-- Edit/Delete handlers (modal placeholders) -->
+<!-- Окно редактирования/удаления преподавателя -->
 <div class="modal fade" id="teacherEditModal" tabindex="-1">
   <div class="modal-dialog">
     <form id="teacher-edit-form" class="modal-content">

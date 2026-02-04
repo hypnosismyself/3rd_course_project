@@ -138,7 +138,7 @@
 
     const menu = document.createElement('ul'); menu.className='dropdown-menu dropdown-menu-end'; menu.setAttribute('aria-labelledby','navAuthToggle');
     const liProfile = document.createElement('li'); const aProfile = document.createElement('a');
-    aProfile.className='dropdown-item'; aProfile.href='/pages/login.html'; aProfile.id='nav-profile-link'; aProfile.textContent='Профиль'; liProfile.appendChild(aProfile);
+    aProfile.className='dropdown-item'; aProfile.href='/pages/me.html'; aProfile.id='nav-profile-link'; aProfile.textContent='Профиль'; liProfile.appendChild(aProfile);
     const liDivider = document.createElement('li'); liDivider.innerHTML='<hr class="dropdown-divider">';
     const liLogout = document.createElement('li'); const btnLogout = document.createElement('button');
     btnLogout.className='dropdown-item'; btnLogout.id='nav-logout-btn'; btnLogout.type='button'; btnLogout.textContent='Выйти'; liLogout.appendChild(btnLogout);
