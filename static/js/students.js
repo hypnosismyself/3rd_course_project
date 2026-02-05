@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const userDisplay = r.user ? `${r.user.username} (${r.user.email})` : `ID:${r.user_id}`;
         const actions = `
           <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-secondary btn-edit" data-id="${r.id}" data-auth-only data-roles="admin,teacher">Изменить</button>
+            <button class="btn btn-sm btn-secondary btn-edit" data-id="${r.id}" data-auth-only data-roles="admin">Изменить</button>
             <button class="btn btn-sm btn-danger btn-delete" data-id="${r.id}" data-auth-only data-role="admin">Удалить</button>
           </div>`;
         return `<tr>

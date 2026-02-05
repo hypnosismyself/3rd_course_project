@@ -2,7 +2,6 @@ from pydantic import BaseModel, EmailStr
 from enum import Enum
 from typing import List, Optional, Dict, Any
 from datetime import datetime, date
-from pydantic import BaseModel, EmailStr
 
 
 class RoleEnum(str, Enum):

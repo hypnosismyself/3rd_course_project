@@ -20,7 +20,7 @@
     <h2>Студенты</h2>
     <div>
       <button id="refresh-students" class="btn btn-outline-secondary me-2" data-auth-only>Обновить</button>
-      <button id="create-student-btn" class="btn btn-primary" data-auth-only data-roles="admin,teacher">Добавить студента</button>
+      <button id="create-student-btn" class="btn btn-primary" data-auth-only data-roles="admin">Добавить студента</button>
       <button id="printReportBtn" class="btn btn-outline-secondary" data-auth-only data-roles="admin,teacher">Печать</button>
     </div>
   </div>
@@ -52,7 +52,7 @@
               <th>Фото</th>
               <th>ФИО</th>
               <th>Группа</th>
-              <th>User</th>
+              <th>Пользователь</th>
               <th style="width:180px">Действия</th>
             </tr>
           </thead>
@@ -71,7 +71,6 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <h6 class="mb-2">Пользователь</h6>
         <div class="mb-2"><label class="form-label">Логин<input name="username" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Пароль<input name="password" type="password" class="form-control" required></label></div>
         <div class="mb-2"><label class="form-label">Эл. почта<input name="email" type="email" class="form-control" required></label></div>
