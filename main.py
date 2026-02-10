@@ -29,9 +29,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Roles API",
-    description="API для управления ролями пользователей",
-    version="1.0.0",
+    title="Courses API",
+    description="API для управления онлайн курсами",
+    version="26.1.0",
     lifespan=lifespan
 )
 
